@@ -1,0 +1,68 @@
+<dom-module id="hr-section">
+  <style>
+    :host{
+      --color: black;
+      --border-color: grey;
+    }
+    .header{
+      display: flex;
+      align-items: center;
+    }
+    .icon-wrapper{
+      color: white;
+      background-color: var(--color);
+      border-radius: 300px;
+      padding: 5px;
+    }
+    .header-text-wrapper ::content > *{
+      text-transform: uppercase;
+      margin-left: 15px;
+      font-size: 24px;
+      color: var(--color);
+      font-weight: 300;
+    }
+    .inline-tube{
+      flex-grow: 2;
+      background-color: var(--color);
+      margin-left: 10px;
+      height: 20px;
+    }
+    .content ::content > *{
+      padding-left: 55px;
+      padding-bottom: 35px;
+      border-left: 1px solid;
+      border-left-color: var(--border-color);
+      margin-left: 16px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+  <template>
+    <div class="header">
+      <div class="icon-wrapper">
+        <content select="iron-icon"></content>
+      </div>
+      <div class="header-text-wrapper">
+        <content select=".section-header"></content>
+      </div>
+      <div class="inline-tube"></div>
+    </div>
+    <div class="content">
+      <content select=".section-content"></content>
+    </div>
+  </template>
+</dom-module>
+<script>
+  (function () {
+    Polymer({
+      is: 'hr-section',
+      listeners: {
+
+      },
+      properties: {
+      },
+      ready: function() {
+      }
+    });
+  })();
+</script>

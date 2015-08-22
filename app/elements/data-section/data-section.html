@@ -1,0 +1,69 @@
+<dom-module id="data-section">
+  <style>
+    :host{
+      --paper-dialog-background-color: white;
+    }
+    .year{
+    }
+    .flex-container{
+      display: flex;
+      width: 130px;
+      align-items: center;
+    }
+    .add-button-wrapper{
+      text-align: right;
+    }
+    .add-button-wrapper paper-button{
+      background: #4285f4;
+      color: #fff;
+    }
+    paper-dialog{
+      position: absolute;
+    }
+  </style>
+  <template>
+    <div class="add-button-wrapper">
+      <paper-button raised id="add">Добавить</paper-button>
+    </div>
+    <paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="scale-down-animation">
+      <h2>[[header]]</h2>
+
+      <form action="">
+        <paper-input label="Название учебного заведения"></paper-input>
+
+        <div class="flex-container">
+          <paper-input class="year" label="Год" prevent-invalid-input allowed-pattern="[0-9]" maxlength="4"></paper-input>
+          <span style="margin: 0px 20px">-</span>
+          <paper-input class="year" label="Год" prevent-invalid-input allowed-pattern="[0-9]"></paper-input>
+        </div>
+
+      </form>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. A ab ad aliquid autem blanditiis dolores ducimus earum, esse fugit, iusto minus nesciunt nihil perspiciatis quae quos sint tempora unde voluptas.
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm>Accept</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+<script>
+  (function () {
+    Polymer({
+      is: 'data-section',
+      listeners: {
+        'add.tap': 'openDialog'
+      },
+      properties: {
+        header: {
+          type: String,
+          value: "Заголовок"
+        }
+      },
+      ready: function() {
+      },
+      openDialog: function(){
+        this.$.dialog.toggle();
+      }
+    });
+  })();
+</script>

@@ -1,0 +1,39 @@
+<dom-module id="text-editor">
+  <style>
+    :host{
+    }
+    textarea{
+      resize: none;
+      background: none;
+      border: none;
+      outline: none;
+    }
+  </style>
+  <template>
+    <div class="textarea-wrapper">
+      <textarea cols$=[[cols]] rows$=[[rows]]></textarea>
+    </div>
+  </template>
+</dom-module>
+<script>
+  (function () {
+    Polymer({
+      is: 'text-editor',
+      listeners: {
+
+      },
+      properties: {
+        cols: {
+          type: Number,
+          value: 30
+        },
+        rows: {
+          type: Number,
+          value: 10
+        }
+      },
+      ready: function() {
+      }
+    });
+  })();
+</script>
