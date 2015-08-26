@@ -1,7 +1,11 @@
+
 <dom-module id="data-section">
   <style>
     :host{
       --paper-dialog-background-color: white;
+    }
+    h1{
+      @apply(--paper-font-title);
     }
     .year{
     }
@@ -9,6 +13,20 @@
       display: flex;
       width: 130px;
       align-items: center;
+    }
+    .flex-container2{
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .flex-container2 *{
+      flex-grow: 1;
+    }
+    .flex-container2 :nth-child(1){
+      flex-basis: 120px;
+      color: var(--secondary-text-color);
+    }
+    .flex-container2 :nth-child(2){
+      flex-basis: 450px;
     }
     .add-button-wrapper{
       text-align: right;
@@ -19,29 +37,38 @@
     }
     paper-dialog{
       position: absolute;
+      min-width: 400px;
     }
   </style>
   <template>
+    <p>
+      <template is="dom-repeat" items="{{items}}">
+        <h1>{{item.title}}</h1>
+        <div class="flex-container2">
+          <div><span>{{item.yearFrom}}</span> - <span>{{item.yearTo}}</span></div>
+          <div>{{item.description}}</div>
+        </div>
+      </template>
+    </p>
     <div class="add-button-wrapper">
       <paper-button raised id="add">Добавить</paper-button>
     </div>
     <paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="scale-down-animation">
       <h2>[[header]]</h2>
 
-      <form action="">
-        <paper-input label="Название учебного заведения"></paper-input>
+      <form is="iron-form" id="form">
+        <paper-input name="title" label="Название учебного заведения"></paper-input>
 
         <div class="flex-container">
-          <paper-input class="year" label="Год" prevent-invalid-input allowed-pattern="[0-9]" maxlength="4"></paper-input>
+          <paper-input name="yearFrom" class="year" label="Год" prevent-invalid-input allowed-pattern="[0-9]" maxlength="4"></paper-input>
           <span style="margin: 0px 20px">-</span>
-          <paper-input class="year" label="Год" prevent-invalid-input allowed-pattern="[0-9]"></paper-input>
+          <paper-input name="yearTo" class="year" label="Год" prevent-invalid-input allowed-pattern="[0-9]" maxlength="4"></paper-input>
         </div>
-
+        <paper-textarea name="description" label="Описание"></paper-textarea>
       </form>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. A ab ad aliquid autem blanditiis dolores ducimus earum, esse fugit, iusto minus nesciunt nihil perspiciatis quae quos sint tempora unde voluptas.
       <div class="buttons">
-        <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button dialog-confirm>Accept</paper-button>
+        <paper-button dialog-dismiss>Отмета</paper-button>
+        <paper-button dialog-confirm>Добавить</paper-button>
       </div>
     </paper-dialog>
   </template>
@@ -57,12 +84,34 @@
         header: {
           type: String,
           value: "Заголовок"
+        },
+        items: {
+          type: Array,
+          value: []
         }
       },
+      created: function(){
+        this.addNewItem = this.addNewItem.bind(this);
+        this.clearForm = this.clearForm.bind(this);
+      },
       ready: function() {
+        this.$.dialog.addEventListener('iron-overlay-closed', this.addNewItem);
+      },
+      addNewItem: function(){
+        if(this.$.dialog.closingReason.confirmed){
+          this.push('items', this.$.form.serialize());
+        }
+        this.clearForm();
+      },
+      clearForm: function(){
+        Polymer.dom(this.root).querySelector('paper-textarea').value = '';
+        Polymer.dom(this.root).querySelectorAll('paper-input').forEach(function(element){
+          element.value = '';
+        });
       },
       openDialog: function(){
-        this.$.dialog.toggle();
+        this.$.dialog.cancelAnimation();
+        this.$.dialog.open();
       }
     });
   })();
