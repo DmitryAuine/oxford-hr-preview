@@ -1,0 +1,26 @@
+<dom-module id="profile-picture">
+    <style>
+        input{
+            opacity: 0;
+        }
+    </style>
+    <template>
+        <div style="text-align: center">
+            <p>
+                <iron-image style="width: 250px; height: 250px;" sizing="cover" src="/images/avatest.jpg"></iron-image>
+            </p>
+            <paper-button on-tap="openDialog"><iron-icon icon="icons:file-upload"></iron-icon>Загрузить</paper-button>
+        </div>
+        <input id="file" type="file"/>
+    </template>
+</dom-module>
+<script>
+    (function () {
+        Polymer({
+            is: 'profile-picture',
+            openDialog: function(){
+                this.$.file.click();
+            }
+        });
+    })();
+</script>
