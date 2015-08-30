@@ -1,17 +1,19 @@
+<link rel="import" href="validators/years.html"/>
+<link rel="import" href="validators/title.html"/>
 
 <dom-module id="data-section">
   <style>
     :host{
       --paper-dialog-background-color: white;
     }
+
     h1{
-      @apply(--paper-font-title);
+    @apply(--paper-font-title);
     }
     .year{
     }
     .flex-container{
       display: flex;
-      width: 130px;
       align-items: center;
     }
     .flex-container2{
@@ -36,39 +38,91 @@
       color: #fff;
     }
     paper-dialog{
-      position: absolute;
-      min-width: 400px;
+      /*position: absolute !important;*/
+      min-width: 350px;
+      min-height: 350px;;
     }
+
+
   </style>
   <template>
+    <year-validator></year-validator>
+    <title-validator></title-validator>
     <p>
       <template is="dom-repeat" items="{{items}}">
-        <h1>{{item.title}}</h1>
+        <div style="float: left">
+          <h1>{{item.title}}</h1>
+        </div>
+        <div style="float: right;">
+          <paper-menu-button id="actions" horizontal-offset="-100">
+            <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
+            <div class="dropdown-content">
+              <paper-item on-click="edit">Редактировать</paper-item>
+              <paper-item on-click="remove">Удалить</paper-item>
+            </div>
+          </paper-menu-button>
+        </div>
+        <div style="clear: both"></div>
         <div class="flex-container2">
           <div><span>{{item.yearFrom}}</span> - <span>{{item.yearTo}}</span></div>
           <div>{{item.description}}</div>
+        </div>
         </div>
       </template>
     </p>
     <div class="add-button-wrapper">
       <paper-button raised id="add">Добавить</paper-button>
     </div>
-    <paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="scale-down-animation">
+    <paper-dialog on-iron-overlay-closed="clearForm"
+                  id="dialog" entry-animation="scale-up-animation" exit-animation="scale-down-animation">
       <h2>[[header]]</h2>
 
       <form is="iron-form" id="form">
-        <paper-input name="title" label="Название учебного заведения"></paper-input>
-
+        <paper-input name="title"
+                     value="{{formData.title}}"
+                     required
+                     onfocusout="validate()"
+                     maxlength="45"
+                     label="Название"
+                     validator="title-validator"
+                     error-message="Неверное название">
+        </paper-input>
+        <br/>
         <div class="flex-container">
-          <paper-input name="yearFrom" class="year" label="Год" prevent-invalid-input allowed-pattern="[0-9]" maxlength="4"></paper-input>
+          <paper-input name="yearFrom"
+                       value="{{formData.yearFrom}}"
+                       required
+                       onfocusout="validate()"
+                       class="year"
+                       label="Год"
+                       prevent-invalid-input
+                       allowed-pattern="[0-9]"
+                       maxlength="4"
+                       validator="year-validator"
+                       error-message="Неверное значение">
+          </paper-input>
           <span style="margin: 0px 20px">-</span>
-          <paper-input name="yearTo" class="year" label="Год" prevent-invalid-input allowed-pattern="[0-9]" maxlength="4"></paper-input>
+          <paper-input name="yearTo"
+                       value="{{formData.yearTo}}"
+                       required
+                       onfocusout="validate()"
+                       class="year"
+                       label="Год"
+                       prevent-invalid-input
+                       allowed-pattern="[0-9]"
+                       maxlength="4"
+                       validator="year-validator"
+                       error-message="Неверное значение">
+          </paper-input>
         </div>
-        <paper-textarea name="description" label="Описание"></paper-textarea>
+        <paper-textarea name="description"
+                        value="{{formData.description}}"
+                        label="Описание">
+        </paper-textarea>
       </form>
       <div class="buttons">
         <paper-button dialog-dismiss>Отмета</paper-button>
-        <paper-button dialog-confirm>Добавить</paper-button>
+        <paper-button id="addSubmit">[[addBtnCaption]]</paper-button>
       </div>
     </paper-dialog>
   </template>
@@ -78,7 +132,8 @@
     Polymer({
       is: 'data-section',
       listeners: {
-        'add.tap': 'openDialog'
+        'add.tap': 'openDialog',
+        'addSubmit.tap': 'addNewItem'
       },
       properties: {
         header: {
@@ -88,6 +143,22 @@
         items: {
           type: Array,
           value: []
+        },
+        formData: {
+          type: Object,
+          value: {
+            title: '',
+            yearFrom: '',
+            yearTo: '',
+            description: ''
+          }
+        },
+        nowEditing: {
+          observer: '_nowEditingChanged'
+        },
+        addBtnCaption: {
+          type: String,
+          value: 'Добавить'
         }
       },
       created: function(){
@@ -95,23 +166,46 @@
         this.clearForm = this.clearForm.bind(this);
       },
       ready: function() {
-        this.$.dialog.addEventListener('iron-overlay-closed', this.addNewItem);
+
       },
       addNewItem: function(){
-        if(this.$.dialog.closingReason.confirmed){
-          this.push('items', this.$.form.serialize());
+        if(this.$.form.validate()){
+          var data = this.$.form.serialize();
+
+          if(this.nowEditing !== void 0){
+            this.set('items.' + this.nowEditing, data);
+          }else{
+            this.push('items', data);
+          }
+          this.$.dialog.close();
         }
-        this.clearForm();
+      },
+      edit: function(e){
+        Polymer.dom(e.target).parentNode.parentNode.close()
+        this.nowEditing = this.items.indexOf(e.model.item);
+        this.populateForm(e.model.item);
+        this.openDialog();
+      },
+      remove: function(e){
+        this.splice('items', this.items.indexOf(e.model.item), 1);
+      },
+      populateForm: function(data){
+        for(var key in data){
+          this.set('formData.' + key, data[key]);
+        }
       },
       clearForm: function(){
-        Polymer.dom(this.root).querySelector('paper-textarea').value = '';
-        Polymer.dom(this.root).querySelectorAll('paper-input').forEach(function(element){
-          element.value = '';
-        });
+        for(var key in this.formData){
+          this.set('formData.' + key, '');
+        }
+        this.nowEditing = void 0;
       },
       openDialog: function(){
         this.$.dialog.cancelAnimation();
         this.$.dialog.open();
+      },
+      _nowEditingChanged: function(n, o){
+        this.addBtnCaption = (n === void 0) ? 'Добавить' : 'Изменить';
       }
     });
   })();

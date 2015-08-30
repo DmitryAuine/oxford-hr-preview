@@ -1,0 +1,11 @@
+<script>
+    Polymer({
+        is: 'year-validator',
+        behaviors: [
+            Polymer.IronValidatorBehavior
+        ],
+        validate: function(value) {
+            return value.trim().length === 4;
+        }
+    });
+</script>

@@ -65,45 +65,44 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <span id="browser-sync-binding"></span>
 <template is="dom-bind" id="app">
-
-    <!-- Main Content -->
-    <div class="container">
-      <div class="row">
-        <div class="col-md-offset-1 col-md-3">
-          Profile info
-        </div>
-        <div class="col-md-7">
-          <hr-section>
-            <iron-icon icon="social:person"></iron-icon>
-            <span class="section-header">О себе</span>
-            <div class="section-content">
-              <paper-textarea label="Напишите немного о себе"></paper-textarea>
-            </div>
-          </hr-section>
-          <hr-section>
-            <iron-icon icon="star"></iron-icon>
-            <span class="section-header">Достижения</span>
-            <div class="section-content">
-              <data-section header="Добавить достижение"></data-section>
-            </div>
-          </hr-section>
-          <hr-section>
-            <iron-icon icon="book"></iron-icon>
-            <span class="section-header">Образование</span>
-            <div class="section-content">
-              <data-section></data-section>
-            </div>
-          </hr-section>
-          <hr-section>
-            <iron-icon icon="work"></iron-icon>
-            <span class="section-header">Опыт работы</span>
-            <div class="section-content">
-              <data-section></data-section>
-            </div>
-          </hr-section>
-        </div>
+  <!-- Main Content -->
+  <div class="container">
+    <div class="row">
+      <div class="col-md-offset-1 col-md-3">
+        Profile info
+      </div>
+      <div class="col-md-7">
+        <hr-section>
+          <iron-icon icon="social:person"></iron-icon>
+          <span class="section-header">О себе</span>
+          <div class="section-content">
+            <paper-textarea label="Напишите немного о себе"></paper-textarea>
+          </div>
+        </hr-section>
+        <hr-section>
+          <iron-icon icon="star"></iron-icon>
+          <span class="section-header">Достижения</span>
+          <div class="section-content">
+            <data-section header="Добавить достижение"></data-section>
+          </div>
+        </hr-section>
+        <hr-section>
+          <iron-icon icon="book"></iron-icon>
+          <span class="section-header">Образование</span>
+          <div class="section-content">
+            <data-section header="Добавить образование"></data-section>
+          </div>
+        </hr-section>
+        <hr-section>
+          <iron-icon icon="work"></iron-icon>
+          <span class="section-header">Опыт работы</span>
+          <div class="section-content">
+            <data-section header="Добавить опыт работы"></data-section>
+          </div>
+        </hr-section>
       </div>
     </div>
+  </div>
   <!-- Uncomment next block to enable Service Worker support (1/2) -->
   <!--
   <paper-toast id="caching-complete"
