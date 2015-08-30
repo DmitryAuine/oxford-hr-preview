@@ -23,6 +23,9 @@
     .flex-container2 *{
       flex-grow: 1;
     }
+    .description{
+      color: var(--secondary-text-color);
+    }
     .flex-container2 :nth-child(1){
       flex-basis: 120px;
       color: var(--secondary-text-color);
@@ -40,16 +43,14 @@
     paper-dialog{
       /*position: absolute !important;*/
       min-width: 350px;
-      min-height: 350px;;
+      min-height: 350px;
     }
-
-
   </style>
   <template>
     <year-validator></year-validator>
     <title-validator></title-validator>
     <p>
-      <template is="dom-repeat" items="{{items}}">
+      <template is="dom-repeat" items="[[items]]">
         <div style="float: left">
           <h1>{{item.title}}</h1>
         </div>
@@ -57,15 +58,15 @@
           <paper-menu-button id="actions" horizontal-offset="-100">
             <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
             <div class="dropdown-content">
-              <paper-item on-click="edit">Редактировать</paper-item>
-              <paper-item on-click="remove">Удалить</paper-item>
+              <paper-item on-tap="edit">Редактировать</paper-item>
+              <paper-item on-tap="remove">Удалить</paper-item>
             </div>
           </paper-menu-button>
         </div>
         <div style="clear: both"></div>
         <div class="flex-container2">
           <div><span>{{item.yearFrom}}</span> - <span>{{item.yearTo}}</span></div>
-          <div>{{item.description}}</div>
+          <div class="description">{{item.description}}</div>
         </div>
         </div>
       </template>
@@ -140,17 +141,22 @@
           type: String,
           value: "Заголовок"
         },
+        dataId: String,
         items: {
           type: Array,
-          value: []
+          value: function(){
+            return [];
+          }
         },
         formData: {
           type: Object,
-          value: {
-            title: '',
-            yearFrom: '',
-            yearTo: '',
-            description: ''
+          value: function(){
+            return {
+              title: '',
+              yearFrom: '',
+              yearTo: '',
+              description: ''
+            };
           }
         },
         nowEditing: {
@@ -160,13 +166,6 @@
           type: String,
           value: 'Добавить'
         }
-      },
-      created: function(){
-        this.addNewItem = this.addNewItem.bind(this);
-        this.clearForm = this.clearForm.bind(this);
-      },
-      ready: function() {
-
       },
       addNewItem: function(){
         if(this.$.form.validate()){
@@ -181,7 +180,7 @@
         }
       },
       edit: function(e){
-        Polymer.dom(e.target).parentNode.parentNode.close()
+        Polymer.dom(e.target).parentNode.parentNode.close(); // i don't like it
         this.nowEditing = this.items.indexOf(e.model.item);
         this.populateForm(e.model.item);
         this.openDialog();
@@ -203,6 +202,9 @@
       openDialog: function(){
         this.$.dialog.cancelAnimation();
         this.$.dialog.open();
+      },
+      getItems: function(){
+        return this.items;
       },
       _nowEditingChanged: function(n, o){
         this.addBtnCaption = (n === void 0) ? 'Добавить' : 'Изменить';

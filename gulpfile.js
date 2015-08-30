@@ -88,7 +88,7 @@ gulp.task('copy', function () {
     '!app/precache.json'
   ], {
     dot: true
-  }).pipe(gulp.dest('dist'));
+  }).pipe(gulp.dest('git dist'));
 
   var bower = gulp.src([
     'bower_components/**/*'
