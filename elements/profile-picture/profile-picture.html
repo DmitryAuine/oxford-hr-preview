@@ -1,0 +1,55 @@
+<dom-module id="profile-picture">
+    <style>
+        iron-image{
+            width: 250px;
+            height: 250px;
+            border-radius: 100%;
+            border: solid 1px;
+            border-left-color: #8BC34A;
+            border-top-color: #FFC107;
+            border-right-color: #E91E63;
+            border-bottom-color: #3F51B5;
+        }
+        input{
+            opacity: 0;
+        }
+        iron-image{
+            cursor: pointer;
+        }
+    </style>
+    <template>
+        <div style="text-align: center">
+            <p>
+                <iron-image on-tap="openDialog" id="ava" style="width: 250px; height: 250px;" sizing="cover" src="../../images/avatest.jpg"></iron-image>
+            </p>
+            <paper-button on-tap="openDialog"><iron-icon icon="icons:file-upload"></iron-icon>Загрузить</paper-button>
+        </div>
+        <input is="iron-input" id="file" type="file"/>
+    </template>
+</dom-module>
+<script>
+    (function () {
+        Polymer({
+            is: 'profile-picture',
+            listeners: {
+                'file.change': 'onFileChange'
+            },
+            openDialog: function(){
+                this.$.file.click();
+            },
+            onFileChange: function(){
+                if (this.$.file.files && this.$.file.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        this.$.ava.src = e.target.result;
+                    }.bind(this);
+
+                    reader.readAsDataURL(this.$.file.files[0]);
+
+                    this.file = this.$.file.files[0];
+                }
+            }
+        });
+    })();
+</script>

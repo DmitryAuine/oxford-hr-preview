@@ -1,0 +1,214 @@
+<link rel="import" href="validators/years.html"/>
+<link rel="import" href="validators/title.html"/>
+
+<dom-module id="data-section">
+  <style>
+    :host{
+      --paper-dialog-background-color: white;
+    }
+
+    h1{
+    @apply(--paper-font-title);
+    }
+    .year{
+    }
+    .flex-container{
+      display: flex;
+      align-items: center;
+    }
+    .flex-container2{
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .flex-container2 *{
+      flex-grow: 1;
+    }
+    .description{
+      color: var(--secondary-text-color);
+    }
+    .flex-container2 :nth-child(1){
+      flex-basis: 120px;
+      color: var(--secondary-text-color);
+    }
+    .flex-container2 :nth-child(2){
+      flex-basis: 450px;
+    }
+    .add-button-wrapper{
+      text-align: right;
+    }
+    .add-button-wrapper paper-button{
+      background: #4285f4;
+      color: #fff;
+    }
+    paper-dialog{
+      /*position: absolute !important;*/
+      min-width: 350px;
+      min-height: 350px;
+    }
+  </style>
+  <template>
+    <year-validator></year-validator>
+    <title-validator></title-validator>
+    <p>
+      <template is="dom-repeat" items="[[items]]">
+        <div style="float: left">
+          <h1>{{item.title}}</h1>
+        </div>
+        <div style="float: right;">
+          <paper-menu-button id="actions" horizontal-offset="-100">
+            <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
+            <div class="dropdown-content">
+              <paper-item on-tap="edit">Редактировать</paper-item>
+              <paper-item on-tap="remove">Удалить</paper-item>
+            </div>
+          </paper-menu-button>
+        </div>
+        <div style="clear: both"></div>
+        <div class="flex-container2">
+          <div><span>{{item.yearFrom}}</span> - <span>{{item.yearTo}}</span></div>
+          <div class="description">{{item.description}}</div>
+        </div>
+        </div>
+      </template>
+    </p>
+    <div class="add-button-wrapper">
+      <paper-button raised id="add">Добавить</paper-button>
+    </div>
+    <paper-dialog on-iron-overlay-closed="clearForm"
+                  id="dialog" entry-animation="scale-up-animation" exit-animation="scale-down-animation">
+      <h2>[[header]]</h2>
+
+      <form is="iron-form" id="form">
+        <paper-input name="title"
+                     value="{{formData.title}}"
+                     required
+                     onfocusout="validate()"
+                     maxlength="45"
+                     label="Название"
+                     validator="title-validator"
+                     error-message="Неверное название">
+        </paper-input>
+        <br/>
+        <div class="flex-container">
+          <paper-input name="yearFrom"
+                       value="{{formData.yearFrom}}"
+                       required
+                       onfocusout="validate()"
+                       class="year"
+                       label="Год"
+                       prevent-invalid-input
+                       allowed-pattern="[0-9]"
+                       maxlength="4"
+                       validator="year-validator"
+                       error-message="Неверное значение">
+          </paper-input>
+          <span style="margin: 0px 20px">-</span>
+          <paper-input name="yearTo"
+                       value="{{formData.yearTo}}"
+                       required
+                       onfocusout="validate()"
+                       class="year"
+                       label="Год"
+                       prevent-invalid-input
+                       allowed-pattern="[0-9]"
+                       maxlength="4"
+                       validator="year-validator"
+                       error-message="Неверное значение">
+          </paper-input>
+        </div>
+        <paper-textarea name="description"
+                        value="{{formData.description}}"
+                        label="Описание">
+        </paper-textarea>
+      </form>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Отмета</paper-button>
+        <paper-button id="addSubmit">[[addBtnCaption]]</paper-button>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+<script>
+  (function () {
+    Polymer({
+      is: 'data-section',
+      listeners: {
+        'add.tap': 'openDialog',
+        'addSubmit.tap': 'addNewItem'
+      },
+      properties: {
+        header: {
+          type: String,
+          value: "Заголовок"
+        },
+        dataId: String,
+        items: {
+          type: Array,
+          value: function(){
+            return [];
+          }
+        },
+        formData: {
+          type: Object,
+          value: function(){
+            return {
+              title: '',
+              yearFrom: '',
+              yearTo: '',
+              description: ''
+            };
+          }
+        },
+        nowEditing: {
+          observer: '_nowEditingChanged'
+        },
+        addBtnCaption: {
+          type: String,
+          value: 'Добавить'
+        }
+      },
+      addNewItem: function(){
+        if(this.$.form.validate()){
+          var data = this.$.form.serialize();
+
+          if(this.nowEditing !== void 0){
+            this.set('items.' + this.nowEditing, data);
+          }else{
+            this.push('items', data);
+          }
+          this.$.dialog.close();
+        }
+      },
+      edit: function(e){
+        Polymer.dom(e.target).parentNode.parentNode.close(); // i don't like it
+        this.nowEditing = this.items.indexOf(e.model.item);
+        this.populateForm(e.model.item);
+        this.openDialog();
+      },
+      remove: function(e){
+        this.splice('items', this.items.indexOf(e.model.item), 1);
+      },
+      populateForm: function(data){
+        for(var key in data){
+          this.set('formData.' + key, data[key]);
+        }
+      },
+      clearForm: function(){
+        for(var key in this.formData){
+          this.set('formData.' + key, '');
+        }
+        this.nowEditing = void 0;
+      },
+      openDialog: function(){
+        this.$.dialog.cancelAnimation();
+        this.$.dialog.open();
+      },
+      getItems: function(){
+        return this.items;
+      },
+      _nowEditingChanged: function(n, o){
+        this.addBtnCaption = (n === void 0) ? 'Добавить' : 'Изменить';
+      }
+    });
+  })();
+</script>
