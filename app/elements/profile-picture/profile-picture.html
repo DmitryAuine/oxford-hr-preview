@@ -15,12 +15,20 @@
         }
         iron-image{
             cursor: pointer;
+            width: 250px;
+            height: 250px;
+        }
+        @media (max-width: 1200px) {
+            iron-image{
+                width: 200px;
+                height: 200px;
+            }
         }
     </style>
     <template>
         <div style="text-align: center">
             <p>
-                <iron-image on-tap="openDialog" id="ava" style="width: 250px; height: 250px;" sizing="cover" src="../../images/avatest.jpg"></iron-image>
+                <iron-image on-tap="openDialog" id="ava" sizing="cover" src="../../images/avatest.jpg"></iron-image>
             </p>
             <paper-button on-tap="openDialog"><iron-icon icon="icons:file-upload"></iron-icon>Загрузить</paper-button>
         </div>

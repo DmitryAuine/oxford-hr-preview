@@ -11,9 +11,11 @@
     @apply(--paper-font-title);
     }
     .year{
+      flex: 1;
     }
     .flex-container{
       display: flex;
+      flex-wrap: nowrap;
       align-items: center;
     }
     .flex-container2{
@@ -55,7 +57,7 @@
           <h1>{{item.title}}</h1>
         </div>
         <div style="float: right;">
-          <paper-menu-button id="actions" horizontal-offset="-100">
+          <paper-menu-button class="actions" horizontal-offset="-100">
             <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
             <div class="dropdown-content">
               <paper-item on-tap="edit">Редактировать</paper-item>
@@ -72,7 +74,7 @@
       </template>
     </p>
     <div class="add-button-wrapper">
-      <paper-button raised id="add">Добавить</paper-button>
+      <paper-button raised on-click="openDialog">Добавить</paper-button>
     </div>
     <paper-dialog on-iron-overlay-closed="clearForm"
                   id="dialog" entry-animation="scale-up-animation" exit-animation="scale-down-animation">
@@ -133,7 +135,6 @@
     Polymer({
       is: 'data-section',
       listeners: {
-        'add.tap': 'openDialog',
         'addSubmit.tap': 'addNewItem'
       },
       properties: {
@@ -180,7 +181,9 @@
         }
       },
       edit: function(e){
-        Polymer.dom(e.target).parentNode.parentNode.close(); // i don't like it
+        Polymer.dom(this.root).querySelectorAll('.actions').forEach(function(elm){
+          elm.close();
+        }); // i don't like it
         this.nowEditing = this.items.indexOf(e.model.item);
         this.populateForm(e.model.item);
         this.openDialog();
